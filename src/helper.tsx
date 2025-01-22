@@ -8,21 +8,37 @@ export class SingleBoyHelper {
 
   constructor(ctx: Context) {
     this.ctx = ctx;
-   InitDB(ctx)
+    InitDB(ctx)
   }
 
   Self(triggers: Array<string>) {
     this.ctx.on('message', async (session) => {
-      if (triggers.indexOf(session.content) != -1) {
+      if (triggers.indexOf(session.content.trim()) != -1) {
         await this.ctx.database.create('masturbation', {
           platform: session.platform,
           user: session.userId,
           time: session.timestamp,
           guild: session.guildId
         })
-        await session.send(<>
-          <at id={session.userId}/>
-          今天才 🦌 了 {(await queryOnToday(this.ctx,session)).length} 次，真是杂鱼呢</>)
+
+        const length = (await queryOnToday(this.ctx, session)).length;
+        if (length < 5) {
+          await session.send(<>
+            <at id={session.userId}/>
+            今天才🦌了 {length} 次，真是杂鱼呢</>)
+        } else if (length < 10) {
+          await session.send(<>
+            <at id={session.userId}/>
+            今天🦌了 {length} 次，真是精力充沛呢</>)
+        } else if (length < 15) {
+          await session.send(<>
+            <at id={session.userId}/>
+            今天已经🦌了{length}次了，休息一下吧</>)
+        } else {
+          await session.send(<>
+            <at id={session.userId}/>
+            已经🦌了{length} 次了，今天的🏆非你莫属哦</>)
+        }
       }
     })
   }
@@ -33,14 +49,16 @@ export class SingleBoyHelper {
       if (!users.ok) {
         return;
       }
-      if (users.data.length == 0){
-        await session.send(<><at id={session.userId}/> 帮🦌失败，请 at 你想帮🦌的好友</>)
+      if (users.data.length == 0) {
+        await session.send(<>
+          <at id={session.userId}/>
+          帮🦌失败，请 at 你想帮🦌的好友</>)
         return;
       }
       let helps: string[] = [];
       let helpsErrs: string[] = [];
       for (let at of users.data) {
-        if (await checkPermissionPush(this.ctx,session, at)) {
+        if (await checkPermissionPush(this.ctx, session, at)) {
           helps.push(at)
         } else {
           helpsErrs.push(at)
@@ -72,7 +90,7 @@ export class SingleBoyHelper {
       if (!users.ok) {
         return;
       }
-      if (users.data.length == 0){
+      if (users.data.length == 0) {
         return;
       }
       let fragment = '' + h('at', {id: session.userId}) + '已添加 '

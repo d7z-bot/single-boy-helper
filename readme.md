@@ -1,4 +1,4 @@
-# koishi-plugin-singleboy-help
+# koishi-plugin-single-boy-help
 
 [![npm](https://img.shields.io/npm/v/koishi-plugin-singleboy-help?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-singleboy-help)
 
