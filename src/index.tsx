@@ -5,22 +5,33 @@ export const name = 'single-boy-help'
 export const inject = ['database']
 
 
+
 export interface Config {
-  single: Array<string>
-  multiple: Array<string>
+  // 自我帮助关键词
+  self:Array<string>,
+  // 帮助他人关键词
+  others:Array<string>,
+  // 绑定好友关键词
+  bind:Array<string>,
+  // 解绑好友关键词
+  unbind:Array<string>,
 }
 
 export const Config: Schema<Config> = Schema.object({
-  single: Schema.array(String).description('自我帮助触发词').required(false).default(['撸', '🦌']),
-  multiple: Schema.array(String).description('帮助他人触发词').required(false).default(['帮撸', '帮🦌']),
+  self: Schema.array(String).description('自我帮助触发词').required(false).default([ '🦌']),
+  others: Schema.array(String).description('帮助他人触发词').required(false).default(['帮🦌']),
+  bind:Schema.array(String).description('绑定好友关键词').required(false).default(['添加🦌友']),
+  unbind: Schema.array(String).description('解绑好友关键词').required(false).default(['解除🦌友关系'])
 })
 
 
 
 
 export function apply(ctx: Context, config: Config) {
-  let helper = new SingleBoyHelper(ctx,config.single,config.multiple);
-  ctx.on('message', async (session) =>  await helper.Send(session))
+  let helper = new SingleBoyHelper(ctx);
+  helper.Self(config.self);
+  helper.Others(config.others);
+  helper.Bind(config.bind);
 }
 
 
