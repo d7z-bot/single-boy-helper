@@ -1,6 +1,6 @@
 import {Context, h} from "koishi";
 import {parseCmdAt} from "./utils";
-import {checkPermissionPush, InitDB, queryOnToday} from "./db";
+import {checkPermission, InitDB, queryToday} from "./db";
 
 
 export class SingleBoyHelper {
@@ -21,7 +21,7 @@ export class SingleBoyHelper {
           guild: session.guildId
         })
 
-        const length = (await queryOnToday(this.ctx, session)).length;
+        const length = (await queryToday(this.ctx, session.platform, session.guildId, session.userId)).length;
         if (length < 5) {
           await session.send(<>
             <at id={session.userId}/>
@@ -58,7 +58,7 @@ export class SingleBoyHelper {
       let helps: string[] = [];
       let helpsErrs: string[] = [];
       for (let at of users.data) {
-        if (await checkPermissionPush(this.ctx, session, at)) {
+        if (await checkPermission(this.ctx, session, at)) {
           helps.push(at)
         } else {
           helpsErrs.push(at)
@@ -95,20 +95,32 @@ export class SingleBoyHelper {
       }
       let fragment = '' + h('at', {id: session.userId}) + '已添加 '
       for (let at of users.data) {
-        await this.ctx.database.create('masturbationAuth', {
-          platform: session.platform,
-          user: session.userId,
-          helper: at,
-          time: session.timestamp,
-          guild: session.guildId
-        })
-        fragment += h('at', {id: at})
+        if (!await checkPermission(this.ctx, session, at)) {
+          await this.ctx.database.create('masturbationAuth', {
+            platform: session.platform,
+            user: session.userId,
+            helper: at,
+            time: session.timestamp,
+            guild: session.guildId
+          })
+          fragment += h('at', {id: at})
+        }
       }
-
       session.send(fragment + '为🦌友')
     })
   }
 
+  Unbind(triggers: Array<string>) {
+    this.ctx.on('message', async (session) => {
+      const users = parseCmdAt(session, triggers);
+      if (!users.ok) {
+        return;
+      }
+      if (users.data.length == 0) {
+        return;
+      }
+    })
+  }
 
 }
 
