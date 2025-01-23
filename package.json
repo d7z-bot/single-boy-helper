@@ -4,6 +4,14 @@
   "version": "0.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "contributors": [
+    "dragon <ExplodingFKL@gmail.com>"
+  ],
+  "homepage": "https://code.d7z.net/bot/single-boy-helper",
+  "repository": {
+    "type": "git",
+    "url": "git+https://code.d7z.net/bot/single-boy-helper.git"
+  },
   "files": [
     "lib",
     "dist"
@@ -19,6 +27,16 @@
     "koishi": "^4.18.3"
   },
   "dependencies": {
-    "ollama": "^0.5.12"
+    "@satorijs/element": "^3.1.7"
+  },
+  "koishi": {
+    "description": {
+      "en": "Single boy helper",
+      "zh": "单身狗之间互帮互助"
+    },
+    "service": {
+      "required": ["database"]
+    },
+    "preview":true
   }
 }
