@@ -53,7 +53,7 @@ export function apply(ctx: Context, config: Config) {
       if (result.ok) {
         return helper.Unbind(session, result.data);
       }
-      if (session.content === '查询排行榜') {
+      if (session.content === '今日🦌榜') {
         return await helper.Rankings(session)
       }
       return Promise.any('')

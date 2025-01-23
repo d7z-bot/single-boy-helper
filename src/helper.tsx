@@ -19,19 +19,19 @@ export class SingleBoyHelper {
     })
     const length = (await queryToday(this.ctx, session.platform, session.guildId, session.userId)).length;
     if (length < 5) {
-      return <>才🦌{length}次就不行啦，真是杂鱼</>
+      return <>诶～才🦌{length}次就缴械投降啦？杂鱼♡ 杂鱼♡！连这点程度都撑不住，果然是小·垃·圾～</>
     } else if (length < 10) {
-      return <>已经🦌了{length}次啦，看来真是精力充沛呢</>
+      return <>呜哇——居然🦌了{length}次？！（⊙ｏ⊙）超～厉害？不愧是♡精力怪兽♡！这么想被夸的话…就施舍你一句小·变·态～（戳脸）</>
     } else if (length < 15) {
-      return <>已经🦌了{length}次了，休息一下吧</>
+      return <>哦呀～？才🦌{length}次就喊停啦？♪（歪头）嘴上说着没问题～其实已经虚～脱·了·吧？（突然凑近）呐、杂鱼能量这么快见底的话…只能颁给你「小·菜·鸡♡耐力勋章」啦！（吐舌）</>
     } else {
-      return <>已经🦌了{length} 次了，今天的手冲冠军非你莫属哦</>
+      return <>欸～～{length}次达成？！（✧ω✧）这就是传说中的『手·冲·冠·军·候·补·生♡』嘛！「恭喜这位虚♂不♂可♂耐の小·宇·宙·爆·发·魔·人～！」（拍手跺脚）</>
     }
   }
 
   async Other(session: Session, users: Array<string>, force: boolean = false): Promise<string> {
     if (users.length == 0) {
-      return '帮🦌失败，请 at 你想帮🦌的好友'
+      return '帮🦌失败，请 at 你想帮的🦌友'
     }
     let helps: string[] = [];
     let helpsErrs: string[] = [];
@@ -51,18 +51,15 @@ export class SingleBoyHelper {
     }
     let fragment = ''
     if (helps.length > 0) {
-      fragment += '成功帮助';
-      helps.forEach(help => {
-        fragment += h('at', {id: help}) + ' '
-      })
-      fragment += '🦌了 '
+      fragment += '成功帮' +
+      helps.map(help => h('at', {id: help})).join(",")
+      fragment += '🦌了一发'
     }
+
     if (helpsErrs.length > 0) {
-      fragment += '帮🦌失败，你没有 🦌'
-      helpsErrs.forEach((helpErr) => {
-        fragment += h('at', {id: helpErr}) + ' '
-      })
-      fragment += '的权限';
+      fragment += '帮🦌失败，你不是' +
+      helpsErrs.map(help => h('at', {id: help})).join(",")
+      fragment += '的🦌友';
     }
     return fragment
   }

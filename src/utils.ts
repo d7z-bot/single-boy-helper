@@ -1,24 +1,30 @@
 import {Session} from "koishi";
-import {ok} from "node:assert";
 
-export class Result<T>{
-  data:T
-  ok:boolean = false
+export class Result<T> {
+  data: T
+  ok: boolean = false
 
-  constructor(success:T) {
+  constructor(success: T) {
     this.data = success;
-    if (success!= null) {
+    if (success != null) {
       this.ok = true;
     }
   }
 }
 
-export function parseCmdAt(session: Session,cmd:Array<string>) {
-  let result:string[] = []
-  let helpOk =false
+export function parseCmdAt(session: Session, cmd: Array<string>) {
+  let result: string[] = []
+  let helpOk = false
   session.elements.forEach(element => {
-    if (element.type === 'text' && cmd.indexOf(element.attrs.content.trim()) != -1) {
-      helpOk = true
+    if (element.type === 'text') {
+      const text = element.attrs.content.trim();
+      if (cmd.indexOf(text) != -1) {
+        helpOk = true
+      } else {
+        if (text.length > 0) {
+          helpOk = false
+        }
+      }
     }
   })
   if (!helpOk) {
@@ -26,8 +32,8 @@ export function parseCmdAt(session: Session,cmd:Array<string>) {
   }
   for (const element of session.elements) {
     if (element.type === 'at' && session.userId !== element.attrs.id) {
-        result.push(element.attrs.id)
-      }
+      result.push(element.attrs.id)
+    }
   }
   return new Result<string[]>(result)
 }
