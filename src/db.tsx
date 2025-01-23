@@ -53,7 +53,6 @@ export function InitDB(ctx: Context) {
 }
 
 
-
 export async function queryToday(ctx: Context,platform :string, guild:string,user :string) {
   const today = new Date();
   let begin = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
@@ -67,26 +66,16 @@ export async function queryToday(ctx: Context,platform :string, guild:string,use
   ).execute()
 }
 
-export async function bind(ctx:Context,platform:string, guild:string,user:string,helper:string) {
-
-}
-export async function checkPermission(ctx: Context, session: Session, userid: string) {
+export async function checkPermission(ctx: Context, session: Session,from :string, to: string) {
   let data = await ctx.database.select("masturbationAuth").where(row =>
     $.and(
       $.eq(row.platform, session.platform),
       $.eq(row.guild, session.guildId),
-      $.eq(row.user, userid),
-      $.eq(row.helper, session.userId),
+      $.eq(row.user, to),
+      $.eq(row.helper, from),
     )
   ).execute();
-  if (data.length > 0) {
-    await ctx.database.create('masturbation', {
-      platform: session.platform,
-      user: userid,
-      helper: session.userId,
-      time: session.timestamp,
-      guild: session.guildId
-    })
-  }
   return data.length > 0;
 }
+
+

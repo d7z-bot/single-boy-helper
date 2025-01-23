@@ -25,7 +25,7 @@ export function parseCmdAt(session: Session,cmd:Array<string>) {
     return new Result<string[]>(null)
   }
   for (const element of session.elements) {
-    if (element.type === 'at' && session.userId !== element.attrs.id && element.attrs.id !== session.bot.user.id) {
+    if (element.type === 'at' && session.userId !== element.attrs.id) {
         result.push(element.attrs.id)
       }
   }
