@@ -7,10 +7,10 @@
   "contributors": [
     "dragon <ExplodingFKL@gmail.com>"
   ],
-  "homepage": "https://code.d7z.net/bot/single-boy-helper",
+  "homepage": "https://github.com/d7z-team/single-boy-helper",
   "repository": {
     "type": "git",
-    "url": "git+https://code.d7z.net/bot/single-boy-helper.git"
+    "url": "git+https://github.com/d7z-team/single-boy-helper"
   },
   "files": [
     "lib",
@@ -32,7 +32,7 @@
   "koishi": {
     "description": {
       "en": "Single boy helper",
-      "zh": "单身狗之间互帮互助"
+      "zh": "单身狗之间互帮互助 (笑)"
     },
     "service": {
       "required": [
