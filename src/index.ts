@@ -5,7 +5,9 @@ import {parseCmdAt} from "./utils";
 export const name = 'single-boy-helper'
 export const inject = ['database']
 export const usage = `
-## 一款简单易用的活跃群友气氛的软件
+## 一款简单易用的活跃群友气氛的软件 (🦌)
+
+项目地址: https://github.com/d7z-team/single-boy-helper
 `;
 
 
