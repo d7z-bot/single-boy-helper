@@ -1,13 +1,14 @@
 import {Context, h, Schema} from 'koishi'
-import {SingleBoyHelper} from "./helper";
+import {HelperConfig, SingleBoyHelper} from "./helper";
 import {parseCmdAt} from "./utils";
+import {at} from "@satorijs/element";
 
 export const name = 'single-boy-helper'
-export const inject = ['database']
-export const usage = `
+export const inject = ['database', 'ai']
+  export const usage = `
 ## 一款简单易用的活跃群友气氛的软件 (🦌)
 
-项目地址: https://github.com/d7z-team/single-boy-helper
+项目地址: https://github.com/d7z-bot/single-boy-helper
 `;
 
 
@@ -22,18 +23,69 @@ export interface Config {
   unbind: Array<string>,
   // 榜单
   rank: string,
+  // 提示词配置
+  config: HelperConfig
 }
 
 export const Config: Schema<Config> = Schema.object({
-  help: Schema.array(String).description('帮助他人触发词').default(['🦌','帮🦌']),
+  help: Schema.array(String).description('帮助他人触发词').default(['🦌', '帮🦌']),
   force: Schema.array(String).description('强行帮助他人触发词').default(['强🦌']),
   bind: Schema.array(String).description('绑定好友关键词').default(['添加🦌友']),
   unbind: Schema.array(String).description('解绑好友关键词').default(['解除🦌友关系']),
   rank: Schema.string().description('查询榜单').default('今日🦌榜'),
+  config: Schema.object({
+    template: Schema.object({
+      self: Schema.string().description('自我帮助')
+        .role('textarea', {rows: [2, 4]})
+        .default('成功帮自己撸了一次，现在已经撸了 {{ Count }} 次了'),
+      other: Schema.string().description('帮助他人')
+        .role('textarea', {rows: [2, 4]})
+        .default('成功帮 {0} 撸了一次'),
+      fail: Schema.string().description('帮助他人失败')
+        .role('textarea', {rows: [2, 4]})
+        .default('帮撸失败，你不是 {0} 的撸友'),
+    }).description('提示词配置'),
+  }).description('扩展配置')
 })
 
 export function apply(ctx: Context, config: Config) {
-  let helper = new SingleBoyHelper(ctx);
+  let helper = new SingleBoyHelper(ctx, config.config);
+  ctx.command("single-boy.masturbation").action(async (ctx) => {
+    return at(ctx.session.userId) + await helper.Self(ctx.session)
+  })
+  ctx.command("single-boy.help <user:user>").action(async (ctx, user: string) => {
+    if (user === "" || user === undefined) {
+      return at(ctx.session.userId) + "参数错误"
+    }
+    let data = user.split(":");
+    return at(ctx.session.userId) + await helper.Other(ctx.session, [data[1]])
+  })
+  ctx.command("single-boy.force-help <user:user>").action(async (ctx, user: string) => {
+    if (user === "" || user === undefined) {
+      return at(ctx.session.userId) + "参数错误"
+    }
+    let data = user.split(":");
+    return at(ctx.session.userId) + await helper.Other(ctx.session, [data[1]], true)
+  })
+
+  ctx.command("single-boy.bind <user:user>").action(async (ctx, user: string) => {
+    if (user === "" || user === undefined) {
+      return at(ctx.session.userId) + "参数错误"
+    }
+    let data = user.split(":");
+    return at(ctx.session.userId) + await helper.Bind(ctx.session, [data[1]])
+  })
+  ctx.command("single-boy.unbind <user:user>").action(async (ctx, user: string) => {
+    if (user === "" || user === undefined) {
+      return at(ctx.session.userId) + "参数错误"
+    }
+    let data = user.split(":");
+    return at(ctx.session.userId) + await helper.Unbind(ctx.session, [data[1]])
+  })
+  ctx.command("single-boy.rank").action(async (ctx) => {
+    return at(ctx.session.userId) + await helper.Rankings(ctx.session)
+  })
+
   ctx.on('message', async (session) => {
     let exec = async function () {
       let result = parseCmdAt(session, config.help);
@@ -67,8 +119,8 @@ export function apply(ctx: Context, config: Config) {
 
     }
     const result = await exec();
-    if (result !== ''){
-      await session.send(h('at',{ id: session.userId })+' ' + result)
+    if (result !== '') {
+      await session.send(h('at', {id: session.userId}) + ' ' + result)
     }
   })
 

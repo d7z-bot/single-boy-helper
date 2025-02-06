@@ -1,16 +1,16 @@
 {
-  "name": "@d7z-team/koishi-plugin-single-boy-helper",
+  "name": "@d7z-bot/koishi-plugin-single-boy-helper",
   "description": "单身狗帮助插件",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "contributors": [
     "dragon <ExplodingFKL@gmail.com>"
   ],
-  "homepage": "https://github.com/d7z-team/single-boy-helper",
+  "homepage": "https://github.com/d7z-bot/single-boy-helper",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/d7z-team/single-boy-helper"
+    "url": "git+https://github.com/d7z-bot/single-boy-helper"
   },
   "files": [
     "lib",
@@ -27,7 +27,12 @@
     "koishi": "^4.18.3"
   },
   "dependencies": {
-    "@satorijs/element": "^3.1.7"
+    "@satorijs/element": "^3.1.7",
+    "handlebars": "^4.7.8",
+    "@d7z-bot/koishi-plugin-openai": "^0.0.1"
+  },
+  "devDependencies": {
+    "@d7z-bot/koishi-plugin-openai": "file:../openai"
   },
   "koishi": {
     "description": {
@@ -36,7 +41,8 @@
     },
     "service": {
       "required": [
-        "database"
+        "database",
+        "ai"
       ]
     },
     "preview": true

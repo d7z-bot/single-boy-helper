@@ -1,13 +1,24 @@
 import {$, Context, h, Session} from "koishi";
 import {checkPermission, InitDB, queryToday} from "./db";
-import {randomMsg} from "./models";
+import Handlebars from "handlebars";
 
+export class HelperConfig {
+  public template: HelperConfigTemplate
+}
+
+export class HelperConfigTemplate {
+  public self: string
+  public other: string
+  public fail: string
+}
 
 export class SingleBoyHelper {
   private readonly ctx: Context;
+  private readonly config: HelperConfig;
 
-  constructor(ctx: Context) {
+  constructor(ctx: Context, config: HelperConfig) {
     this.ctx = ctx;
+    this.config = config;
     InitDB(ctx)
   }
 
@@ -18,8 +29,12 @@ export class SingleBoyHelper {
       time: session.timestamp,
       guild: session.guildId
     })
-    const length = (await queryToday(this.ctx, session.platform, session.guildId, session.userId)).length;
-    return randomMsg(length)
+    let count = (await queryToday(this.ctx, session.platform, session.guildId, session.userId)).length
+    // @ts-ignore
+    return this.ctx.ai.retouch(
+      Handlebars.compile(this.config.template.self)({
+        Count: count,
+      }))
   }
 
   async Other(session: Session, users: Array<string>, force: boolean = false): Promise<string> {
@@ -42,19 +57,24 @@ export class SingleBoyHelper {
         helpsErrs.push(at)
       }
     }
-    let fragment = ''
     if (helps.length > 0) {
-      fragment += '成功帮' +
-      helps.map(help => h('at', {id: help})).join(",")
-      fragment += '🦌了一发'
+      // @ts-ignore
+      return await this.ctx.ai.retouch(Handlebars.compile(this.config.template.other)( {
+          users: helps,
+        }),
+        helps.map(help => h('at', {id: help})).join(",")
+      )
     }
 
     if (helpsErrs.length > 0) {
-      fragment += '帮🦌失败，你不是' +
-      helpsErrs.map(help => h('at', {id: help})).join(",")
-      fragment += '的🦌友';
+      // @ts-ignore
+      return await this.ctx.ai.retouch(Handlebars.compile(this.config.template.fail)( {
+          users: helpsErrs,
+        }),
+        helpsErrs.map(help => h('at', {id: help})).join(",")
+      )
     }
-    return fragment
+    return ''
   }
 
 
@@ -64,7 +84,7 @@ export class SingleBoyHelper {
     }
     let fragment = '已添加'
     for (let at of users) {
-      if (!await checkPermission(this.ctx, session,  at,session.userId)) {
+      if (!await checkPermission(this.ctx, session, at, session.userId)) {
         await this.ctx.database.create('masturbationAuth', {
           platform: session.platform,
           user: session.userId,
@@ -92,15 +112,16 @@ export class SingleBoyHelper {
           $.eq(row.helper, user)
         )
       })
-      if (result.matched  > 0){
+      if (result.matched > 0) {
         res.push(h('at', {id: user}))
       }
     }
-    if (res.length == 0){
+    if (res.length == 0) {
       return '你们之间不是🦌友哦'
     }
     return '已解除' + res.join(',') + '的🦌友关系'
   }
+
   async Rankings(session: Session) {
     const today = new Date();
     let begin = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
@@ -110,25 +131,25 @@ export class SingleBoyHelper {
           $.eq(row.platform, session.platform),
           $.eq(row.guild, session.guildId),
           $.gt(row.time, begin))
-      ).groupBy('user',{
+      ).groupBy('user', {
         count: row => $.count(row.id)
       }).orderBy('count', 'desc').execute();
 
 
-    if(result.length == 0){
+    if (result.length == 0) {
       return "今天没有人🦌哦，欢迎献出你的第一次捏"
     }
-    let res =`\n今日🦌友排行榜\n`
+    let res = `\n今日🦌友排行榜\n`
     for (let i = 0; i < result.length; i++) {
       let item = result[i]
-      const user = await session.bot.getGuildMember(session.guildId,item.user );
+      const user = await session.bot.getGuildMember(session.guildId, item.user);
       let userName = user.nick;
-      if(userName === ''){
+      if (userName === '') {
         userName = user.user.name
       }
       res += `\n${userName}    ${item.count} 次`
     }
-    res+='\n\n'
+    res += '\n\n'
     return res
   }
 }
