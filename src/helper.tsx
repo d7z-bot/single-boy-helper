@@ -61,8 +61,10 @@ export class SingleBoyHelper {
       // @ts-ignore
       return await this.ctx.ai.retouch(Handlebars.compile(this.config.template.other)( {
           users: helps,
+          count:helps.length,
         }),
-        helps.map(help => h('at', {id: help})).join(",")
+        helps.map(help => h('at', {id: help})).join(","),
+        h('at', {id: session.userId})
       )
     }
 

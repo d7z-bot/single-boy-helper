@@ -40,7 +40,7 @@ export const Config: Schema<Config> = Schema.object({
         .default('成功帮自己撸了一次，现在已经撸了 {{ Count }} 次了'),
       other: Schema.string().description('帮助他人')
         .role('textarea', {rows: [2, 4]})
-        .default('成功帮 {0} 撸了一次'),
+        .default('{1} 成功帮 {0} 撸了一次'),
       fail: Schema.string().description('帮助他人失败')
         .role('textarea', {rows: [2, 4]})
         .default('帮撸失败，你不是 {0} 的撸友'),
