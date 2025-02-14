@@ -1,7 +1,7 @@
 {
   "name": "@d7z-bot/koishi-plugin-single-boy-helper",
   "description": "单身狗帮助插件",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "contributors": [

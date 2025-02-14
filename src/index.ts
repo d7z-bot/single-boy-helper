@@ -5,7 +5,7 @@ import {at} from "@satorijs/element";
 
 export const name = 'single-boy-helper'
 export const inject = ['database', 'ai']
-  export const usage = `
+export const usage = `
 ## 一款简单易用的活跃群友气氛的软件 (🦌)
 
 项目地址: https://github.com/d7z-bot/single-boy-helper
@@ -37,7 +37,7 @@ export const Config: Schema<Config> = Schema.object({
     template: Schema.object({
       self: Schema.string().description('自我帮助')
         .role('textarea', {rows: [2, 4]})
-        .default('成功帮自己撸了一次，现在已经撸了 {{ Count }} 次了'),
+        .default('成功{0}撸了一次，现在已经撸了 {{ Count }} 次了'),
       other: Schema.string().description('帮助他人')
         .role('textarea', {rows: [2, 4]})
         .default('{1} 成功帮 {0} 撸了一次'),
@@ -51,21 +51,21 @@ export const Config: Schema<Config> = Schema.object({
 export function apply(ctx: Context, config: Config) {
   let helper = new SingleBoyHelper(ctx, config.config);
   ctx.command("single-boy.masturbation").action(async (ctx) => {
-    return at(ctx.session.userId) + await helper.Self(ctx.session)
+    return await helper.Self(ctx.session)
   })
   ctx.command("single-boy.help <user:user>").action(async (ctx, user: string) => {
     if (user === "" || user === undefined) {
       return at(ctx.session.userId) + "参数错误"
     }
     let data = user.split(":");
-    return at(ctx.session.userId) + await helper.Other(ctx.session, [data[1]])
+    return await helper.Other(ctx.session, [data[1]])
   })
   ctx.command("single-boy.force-help <user:user>").action(async (ctx, user: string) => {
     if (user === "" || user === undefined) {
       return at(ctx.session.userId) + "参数错误"
     }
     let data = user.split(":");
-    return at(ctx.session.userId) + await helper.Other(ctx.session, [data[1]], true)
+    return await helper.Other(ctx.session, [data[1]], true)
   })
 
   ctx.command("single-boy.bind <user:user>").action(async (ctx, user: string) => {

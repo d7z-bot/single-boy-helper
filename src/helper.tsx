@@ -34,7 +34,7 @@ export class SingleBoyHelper {
     return this.ctx.ai.retouch(
       Handlebars.compile(this.config.template.self)({
         Count: count,
-      }))
+      }),h('at', {id: session.userId}))
   }
 
   async Other(session: Session, users: Array<string>, force: boolean = false): Promise<string> {
