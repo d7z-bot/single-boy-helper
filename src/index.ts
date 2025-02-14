@@ -106,25 +106,23 @@ export function apply(ctx: Context, config: Config) {
       }
       result = parseCmdAt(session, config.bind);
       if (result.ok) {
-        return helper.Bind(session, result.data);
+        return h('at', {id: session.userId}) + await helper.Bind(session, result.data);
       }
       result = parseCmdAt(session, config.unbind);
       if (result.ok) {
-        return helper.Unbind(session, result.data);
+        return h('at', {id: session.userId}) + await helper.Unbind(session, result.data);
       }
       if (session.content === config.rank) {
-        return await helper.Rankings(session)
+        return h('at', {id: session.userId}) + await helper.Rankings(session)
       }
       return Promise.any('')
 
     }
     const result = await exec();
     if (result !== '') {
-      await session.send(h('at', {id: session.userId}) + ' ' + result)
+      await session.send(result)
     }
   })
-
-
 }
 
 
